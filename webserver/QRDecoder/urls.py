@@ -8,7 +8,7 @@ urlpatterns = patterns('',
     # Examples:
     # url(r'^$', 'QRDecoder.views.home', name='home'),
     # url(r'^blog/', include('blog.urls')),
-    url(r'^decode/(?P<base_64>.+)/$',views.makeData),
+    url(r'^decode/(?P<file_id>)/(?P<part_id>)/(?P<base_64>.+)/$',views.makeData),
     url(r'^$',views.index),
     url(r'^admin/', include(admin.site.urls)),
 )
