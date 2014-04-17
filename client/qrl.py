@@ -49,7 +49,7 @@ def createQR(data):
 	# else:
 	quantity=ceil(float(len(data))/max_length)
 	quantity=int(quantity)
-	max_length-=len(str(quantity))+1+3 #We add 1 just as padding in case the quantity changes, we add 3 because we add 3 slashes in our URL
+	max_length-=(len(str(quantity))+1+3) #We add 1 just as padding in case the quantity changes, we add 3 because we add 3 slashes in our URL
 	#quantity must be recreated now that max_length has been changed
 	quantity=ceil(float(len(data))/max_length)
 	quantity=int(quantity)
