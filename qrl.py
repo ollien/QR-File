@@ -1,6 +1,7 @@
 import qrcode
 import re
 import configReader
+from math import ceil
 def checkFullURL(string):
 	result=re.match('http://(www.)?\w.+/+\w*._',string) #This is regex to check for a url that begins with http://, possibly has www., and ends with /(something)_. Remove /+\w*._ to not check the ending.
 	if result:
@@ -39,10 +40,12 @@ def createQR(data):
 	reader=configReader.ConfigReader()
 	reader.readKeys()
 	keys=reader.getKeys()
+	baseUrl=None
 	try:
 		baseUrl=keys['baseUrl']
 	except KeyError:
 		raise ValueError("No BaseURL found in config")
+	qrs=[]
 	max_length-=len(baseUrl)
 	try:
 		checkBaseURL(baseUrl)
@@ -51,4 +54,27 @@ def createQR(data):
 		
 	if length%4 is not 0:
 		return 'not valid b64'
+	#Start splitting up the data into different urls
+	# if len(data)<max_length:
+	# 	url=baseUrl+data
+	# else:
+	quantity=ceil(float(len(data))/max_length)
+	quantity=int(quantity)
+	split=ceil(float(len(data))/quantity)
+	split=int(split)
+	print split
+	print len(data)
+	alreadySplit=0
+	for i in range(quantity):
+		url=baseUrl
+		if alreadySplit+split<len(data):
+			url+=data[alreadySplit:alreadySplit+split]
+			if quantity>1:
+				url+='_'
+			alreadySplit+=split
+		else:
+			url+=data[alreadySplit:]
+		qrs.append(qrcode.make(url))
+	return qrs
+	
 	
