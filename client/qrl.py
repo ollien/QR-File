@@ -1,6 +1,7 @@
 import qrcode
 import re
 import configReader
+from uuid import uuid4
 from math import ceil
 def checkBaseURL(string):
 	result=re.match('http://(www.)?\w.+/',string) #This is regex to check for a url that begins with http://, possibly has www., and ends with /
@@ -26,6 +27,9 @@ def createQR(data):
 	reader.readKeys()
 	keys=reader.getKeys()
 	baseUrl=None
+	fileId=uuid4().hex
+	max_length-=len(fileId)
+	urlId=1
 	try:
 		baseUrl=keys['baseUrl']
 	except KeyError:
@@ -45,13 +49,18 @@ def createQR(data):
 	# else:
 	quantity=ceil(float(len(data))/max_length)
 	quantity=int(quantity)
+	max_length-=len(str(quantity))+1+3 #We add 1 just as padding in case the quantity changes, we add 3 because we add 3 slashes in our URL
+	#quantity must be recreated now that max_length has been changed
+	quantity=ceil(float(len(data))/max_length)
+	quantity=int(quantity)
+	
 	split=ceil(float(len(data))/quantity)
 	split=int(split)
 	print split
 	print len(data)
 	alreadySplit=0
 	for i in range(quantity):
-		url=baseUrl
+		url=baseUrl+"/"+fileId+"/"+urlId+"/"
 		if alreadySplit+split<len(data):
 			url+=data[alreadySplit:alreadySplit+split]
 			if quantity>1:
