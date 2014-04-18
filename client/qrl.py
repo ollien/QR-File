@@ -71,6 +71,7 @@ def createQR(data):
 			url+=data[alreadySplit:]
 		print len(url)
 		urlId+=1
+		# print url
 		qrs.append(qrcode.make(url))
 	return qrs
 	
