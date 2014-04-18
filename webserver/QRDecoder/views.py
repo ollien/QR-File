@@ -3,6 +3,7 @@ import base64
 import zlib
 import magic
 import json
+from operator import itemgetter
 def index(request):
 	return HttpResponse("Woo!")
 
@@ -13,8 +14,10 @@ def makeData(request,file_id,part_id,base_64):
 	if (base_64[-1]!='_'):
 		cookies=request.COOKIES
 		parts=""
+		parsedCookies=[]
 		for cookieName in cookies.keys():
 			cookie=cookies[cookieName]
+			print cookieName
 			fail=False
 			parsedCookie=None
 			try:
@@ -23,26 +26,37 @@ def makeData(request,file_id,part_id,base_64):
 				fail=True
 				print 'failed'
 			print '--'
-			print parsedCookie
+			# print parsedCookie
 			if not fail:
-				if file_id not in cookieName:
-					print 'file_id found...'
-					try:
-						cookies.remove(cookie)
-					except ValueError:
-						pass
+				parsedCookies.append(parsedCookie)
+		for item in parsedCookies:
+			item['partId']=int(item['partId'])
+		#Removing duplicates
+		partIds=list(set(map(itemgetter('partId'),parsedCookies)))
+		tempList=[]
+		for item in parsedCookies:
+			if item['partId'] in partIds:
+				del partIds[partIds.index(item['partId'])]
+				tempList.append(parsedCookies[parsedCookies.index(item)])
+				
+		#Done removing duplicates
+		parsedCookies=sorted(tempList,key=itemgetter('partId'))
+		for item in parsedCookies:
+			print item['partId']
+		
+		for cookie in parsedCookies:
+				part=cookie['part']
+				if part[-1]=='_':
+					parts+=part[:-1]
 				else:
-					part=parsedCookie['part']
-					if part[-1]=='_':
-						parts+=part[:-1]
-					else:
-						parts+=part
-					print 'added '+part
-			parts+=base_64
-			print parts
-			zipped=base64.b64decode(parts)
-			unzipped=zlib.decompress(zipped)
-			return HttpResponse(unzipped,mimetype=magic.from_buffer(unzipped,mime=True))
+					parts+=part
+				print 'added '+part
+		parts+=base_64
+		print '--'
+		print parts
+		zipped=base64.b64decode(parts)
+		unzipped=zlib.decompress(zipped)
+		return HttpResponse(unzipped,mimetype=magic.from_buffer(unzipped,mime=True))
 					
 		#return HttpResponse(unzipped,mimetype=magic.from_buffer(unzipped,mime=True))
 	else:
