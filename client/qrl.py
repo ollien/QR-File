@@ -22,7 +22,7 @@ def checkBaseURL(string):
 	
 def createQR(data):
 	length=len(data)
-	max_length=2133 #This is the highest number I was able to get to generate a url in testing
+	max_length=1264 #This is the highest number of chars according to wikipedia
 	reader=configReader.ConfigReader()
 	reader.readKeys()
 	keys=reader.getKeys()
@@ -59,8 +59,9 @@ def createQR(data):
 	print split
 	print len(data)
 	alreadySplit=0
+	print max_length
 	for i in range(quantity):
-		url=baseUrl+"/"+fileId+"/"+urlId+"/"
+		url=baseUrl+fileId+"/"+str(urlId)+"/"
 		if alreadySplit+split<len(data):
 			url+=data[alreadySplit:alreadySplit+split]
 			if quantity>1:
@@ -68,6 +69,8 @@ def createQR(data):
 			alreadySplit+=split
 		else:
 			url+=data[alreadySplit:]
+		print len(url)
+		urlId+=1
 		qrs.append(qrcode.make(url))
 	return qrs
 	
