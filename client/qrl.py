@@ -60,7 +60,7 @@ def createQR(data):
 	print len(data)
 	alreadySplit=0
 	for i in range(quantity):
-		url=baseUrl+"/"+fileId+"/"+urlId+"/"
+		url=baseUrl+fileId+"/"+str(urlId)+"/"
 		if alreadySplit+split<len(data):
 			url+=data[alreadySplit:alreadySplit+split]
 			if quantity>1:
